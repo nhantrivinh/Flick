@@ -24,6 +24,7 @@ class MoviesViewController: UIViewController {
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
     var endpoint = ""
+    var imagePaths = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -168,19 +169,25 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
         let lowResImageRequest = NSURLRequest(url: lowResUrl)
         let highResImageRequest = NSURLRequest(url: highResUrl)
         
-        sender.setImageWith(lowResImageRequest as URLRequest, placeholderImage: nil, success: { (lowResImageRequest, response, image) in
-            sender.image = image
-            sender.alpha = 0
-            UIView.animate(withDuration: 0.3, animations: {
-                sender.alpha = 1
-            }, completion: { (completed) in
-                sender.setImageWith(highResImageRequest as URLRequest, placeholderImage: nil, success: { (highResImageRequest, response, image) in
-                    if response != nil {
-                        sender.image = image
-                    }
-                }, failure: nil)
-            })
-        }, failure: nil)
+        if !imagePaths.contains(baseHighResUrl) {
+            sender.setImageWith(lowResImageRequest as URLRequest, placeholderImage: nil, success: { (lowResImageRequest, response, image) in
+                sender.image = image
+                sender.alpha = 0
+                UIView.animate(withDuration: 0.3, animations: {
+                    sender.alpha = 1
+                }, completion: { (completed) in
+                    sender.setImageWith(highResImageRequest as URLRequest, placeholderImage: nil, success: { (highResImageRequest, response, image) in
+                        if response != nil {
+                            self.imagePaths.append(baseHighResUrl)
+                            sender.image = image
+                        }
+                    }, failure: nil)
+                })
+            }, failure: nil)
+        } else {
+            sender.setImageWith(highResUrl)
+        }
+        
     }
     
 }
