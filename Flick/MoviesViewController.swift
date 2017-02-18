@@ -119,7 +119,7 @@ class MoviesViewController: UIViewController {
         searchBar.resignFirstResponder()
         let cell = sender as! UITableViewCell
         let indexPath = tableView.indexPath(for: cell)!
-        let movie = movies![indexPath.row]
+        let movie = filteredMovies![indexPath.row]
         
         let detailVC = segue.destination as! DetailsViewController
         detailVC.movie = movie
