@@ -24,7 +24,6 @@ class MoviesViewController: UIViewController {
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
     var endpoint = ""
-    var cachedHighRes = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -169,44 +168,19 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
         let lowResImageRequest = NSURLRequest(url: lowResUrl)
         let highResImageRequest = NSURLRequest(url: highResUrl)
         
-        print(cachedHighRes)
-        print("High res count:")
-        print(cachedHighRes.count)
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            if self.cachedHighRes.contains(baseHighResUrl) {
-                print("High Res Cached")
-                DispatchQueue.main.async {
-                    sender.setImageWith(highResImageRequest as URLRequest, placeholderImage: nil, success: { (highResImageRequest, imageResponse, highResImage) in
-                        if imageResponse != nil {
-                            sender.image = highResImage
-                        }
-                    }, failure: nil)
-                }
-            } else {
-                self.cachedHighRes.append(baseHighResUrl)
-                sender.setImageWith(lowResImageRequest as URLRequest, placeholderImage: nil, success: { (lowResImageRequest, imageResponse, lowResImage) in
-                    if imageResponse != nil {
-                        DispatchQueue.main.async {
-                            sender.image = lowResImage
-                        }
-                        sender.alpha = 0.0
-                        UIView.animate(withDuration: 0.3, animations: {
-                            sender.alpha = 1.0
-                        }, completion: { (complete) in
-                            sender.setImageWith(highResImageRequest as URLRequest, placeholderImage: nil, success: { (highResImageRequest, imageResponse, highResImage) in
-                                if imageResponse != nil {
-                                    DispatchQueue.main.async {
-                                        sender.image = highResImage
-                                    }
-                                }
-                            }, failure: nil)
-                        })
+        sender.setImageWith(lowResImageRequest as URLRequest, placeholderImage: nil, success: { (lowResImageRequest, response, image) in
+            sender.image = image
+            sender.alpha = 0
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.alpha = 1
+            }, completion: { (completed) in
+                sender.setImageWith(highResImageRequest as URLRequest, placeholderImage: nil, success: { (highResImageRequest, response, image) in
+                    if response != nil {
+                        sender.image = image
                     }
-                })
-            }
-        }
-        
+                }, failure: nil)
+            })
+        }, failure: nil)
     }
     
 }

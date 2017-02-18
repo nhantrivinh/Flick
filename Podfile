@@ -9,4 +9,5 @@ target 'Flick' do
   pod 'AFNetworking', '~> 3.0'
   pod 'MBProgressHUD'
   pod 'PopupDialog'
+  pod 'SDWebImage'
 end

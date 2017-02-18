@@ -17,6 +17,10 @@ class MovieGridCell: UICollectionViewCell {
         return imgView
     }()
     
+//    override func prepareForReuse() {
+//        self.imgView.image = nil
+//    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
